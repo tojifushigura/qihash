@@ -1,0 +1,23 @@
+{
+  "algorithm": "qiHash-v1",
+  "vectors": [
+    {
+      "type": "hash",
+      "input_utf8": "abc",
+      "output_len": 64,
+      "hex": "8ac77cc088d67e24a4b6ce78b9c527554ca280c1e91f3d0c3ffb6ff085eedd15dded0495b1ab1d4b94290c74bef8748d5521ec525a2d0cf9a8643e0cf8c8294a"
+    },
+    {
+      "type": "kdf",
+      "password_utf8": "password",
+      "salt_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "pepper_hex": "00112233445566778899aabbccddeeff",
+      "device_hex": "0f0e0d0c0b0a09080706050403020100",
+      "memory_kib": 1024,
+      "passes": 2,
+      "mode": "id",
+      "output_len": 64,
+      "hex": "b639794e73b7421aed032593b7285af83a716612558ba139d2ac2b9cfe0f4bc931d2c31f8d8804c6a0a2fc6ba963bf31d550745e5e55b610660539e74295d006"
+    }
+  ]
+}
