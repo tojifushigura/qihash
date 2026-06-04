@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: Build and test (${{ matrix.cc }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show compiler version
+        run: ${{ matrix.cc }} --version
+
+      - name: Build
+        run: |
+          make clean
+          make CC=${{ matrix.cc }} CFLAGS="-std=c99 -O2 -Wall -Wextra -Wpedantic -D_POSIX_C_SOURCE=200809L -Werror"
+
+      - name: Run tests
+        run: make test
+
+      - name: Build and run example
+        run: make example
+
+      - name: Run quick benchmark smoke test
+        run: ./build/qihash bench --profile test
