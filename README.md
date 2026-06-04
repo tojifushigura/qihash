@@ -1,6 +1,11 @@
 # qiHash
 
-**qiHash** — open-source C99 framework for data hashing and memory-hard password hashing/KDF.
+[![CI](https://github.com/tojifushigura/qihash/actions/workflows/ci.yml/badge.svg)](https://github.com/tojifushigura/qihash/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Language: C99](https://img.shields.io/badge/language-C99-blue.svg)](include/qihash.h)
+[![Security Policy](https://img.shields.io/badge/security-policy-important.svg)](SECURITY.md)
+
+**qiHash** is an open-source C99 framework for data hashing and memory-hard password hashing / key derivation.
 
 Full name:
 
@@ -8,23 +13,43 @@ Full name:
 qiHash: Quantum Integrity Hashing Framework
 ```
 
-The project is written from scratch, has no runtime dependencies, and includes:
+Short description:
 
-- `qiHash-XOF-v1` — extendable-output hash core for data/file digests.
-- `qiKDF-v1` — memory-hard password hashing / key derivation function.
+```text
+Memory-hard hashing and KDF framework for post-quantum search-cost research.
+```
+
+## Status
+
+qiHash is a complete working implementation intended for public review, testing, benchmarking and hardening.
+
+Current release target:
+
+```text
+v0.1.0 — first public review release
+```
+
+Security status:
+
+- Not independently cryptographically audited yet.
+- Not recommended as a drop-in replacement for audited production password hashing schemes yet.
+- Suitable for review, experimentation, benchmarking, education and further open-source hardening.
+
+For production password storage today, use established and reviewed password hashing schemes. qiHash is a new independent design that must earn trust through review, testing, benchmarks and external analysis.
+
+## Goals
+
+qiHash aims to provide:
+
+- A dependency-free C99 implementation.
+- A clear memory-hard KDF design.
 - Password hash encoding and verification.
 - Salt, pepper and device-secret support.
+- Profiles for different cost levels.
 - Modes for different threat models: `safe`, `hard`, `id`.
-- CLI utility.
-- Static C library.
-- Tests, self-test, benchmark and C example.
-- Specification and threat model.
-
-> Important: qiHash is a complete working implementation, not a demo. However, any new cryptographic algorithm still requires external cryptanalysis and audit before being trusted for high-risk production systems. This repository is engineered for open review.
-
-## Why qiHash exists
-
-Classical fast hashes such as MD5/SHA-1/SHA-256 are not suitable for password storage because attackers can compute huge numbers of guesses very quickly. qiHash focuses on making each password guess expensive in time and memory.
+- Simple CLI and static C library.
+- Test vectors, self-test and benchmarks.
+- Documentation for public review and maintainers.
 
 The target pressure model is:
 
@@ -32,7 +57,28 @@ The target pressure model is:
 CPU + GPU + RAM/VRAM + ASIC/FPGA + quantum-search pressure
 ```
 
-qiHash does not claim that hashes can be “decoded”. Hashes are not decrypted; passwords are guessed. qiKDF-v1 is designed to make each guess expensive.
+qiHash does not claim that hashes can be “decoded”. Hashes are not decrypted; passwords are guessed. qiKDF is designed to make each guess expensive in time and memory.
+
+## Non-goals
+
+qiHash does not aim to:
+
+- Claim proven security without independent review.
+- Replace Argon2id, scrypt or other reviewed schemes in critical systems today.
+- Provide encryption, TLS, signatures or post-quantum key exchange.
+- Hide weak user passwords without rate limits, MFA, pepper and deployment controls.
+- Promise resistance against all future cryptanalytic discoveries.
+
+## Components
+
+- `qiHash-XOF-v1` — extendable-output hash core for data/file digests.
+- `qiKDF-v1` — memory-hard password hashing / key derivation function.
+- Password hash encoding and verification.
+- Salt, pepper and device-secret support.
+- CLI utility.
+- Static C library.
+- Tests, self-test, benchmark and C example.
+- Specification and threat model.
 
 ## Build
 
@@ -88,7 +134,7 @@ For a quick local test profile:
 Verify password hash:
 
 ```bash
-HASH='./...'
+HASH='$qihash$v=1$mode=id$m=1024$t=2$out=64$s=...$h=...'
 ./build/qihash password-verify --password 'secret' --encoded "$HASH"
 ```
 
@@ -179,13 +225,42 @@ qihash/
 ├── SPEC.md
 ├── THREAT_MODEL.md
 ├── COMPETITOR_ANALYSIS.md
+├── CONTRIBUTING.md
+├── CODE_OF_CONDUCT.md
+├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
 └── LICENSE
 ```
 
-## Security status
+## How to contribute
 
-qiHash is released for open review and controlled experimentation. Do not replace audited production password hashing with qiHash until the algorithm has received independent cryptographic analysis.
+Start with [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-For production today, standard algorithms such as Argon2id remain the safe recommendation. qiHash is a new independent design intended for review, benchmarking and future hardening.
+Useful contribution areas:
+
+- Test vectors.
+- Fuzzing harnesses.
+- Static analysis.
+- Portability fixes.
+- Documentation.
+- Benchmarks.
+- Review of security assumptions.
+
+For vulnerabilities, do not open a public issue. Follow [`SECURITY.md`](SECURITY.md).
+
+## Roadmap
+
+See [`ROADMAP.md`](ROADMAP.md).
+
+Immediate public-review tasks:
+
+- Independent cryptographic review.
+- Fuzzing.
+- Benchmarks.
+- Documentation improvements.
+- Portability testing.
+
+## License
+
+MIT License. See [`LICENSE`](LICENSE).
