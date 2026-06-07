@@ -1,6 +1,8 @@
 # qiHash
 
 [![CI](https://github.com/tojifushigura/qihash/actions/workflows/ci.yml/badge.svg)](https://github.com/tojifushigura/qihash/actions/workflows/ci.yml)
+[![Sanitizers](https://github.com/tojifushigura/qihash/actions/workflows/sanitizers.yml/badge.svg)](https://github.com/tojifushigura/qihash/actions/workflows/sanitizers.yml)
+[![Portability](https://github.com/tojifushigura/qihash/actions/workflows/portability.yml/badge.svg)](https://github.com/tojifushigura/qihash/actions/workflows/portability.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Language: C99](https://img.shields.io/badge/language-C99-blue.svg)](include/qihash.h)
 [![Security Policy](https://img.shields.io/badge/security-policy-important.svg)](SECURITY.md)
@@ -49,6 +51,7 @@ qiHash aims to provide:
 - Modes for different threat models: `safe`, `hard`, `id`.
 - Simple CLI and static C library.
 - Test vectors, self-test and benchmarks.
+- Fuzzing, sanitizer and portability workflows.
 - Documentation for public review and maintainers.
 
 The target pressure model is:
@@ -78,9 +81,10 @@ qiHash does not aim to:
 - CLI utility.
 - Static C library.
 - Tests, self-test, benchmark and C example.
-- Specification and threat model.
+- Fuzz harnesses and seed corpus.
+- Specification, threat model and review packet.
 
-## Build
+## Build with Make
 
 ```bash
 make
@@ -93,7 +97,15 @@ The binary will be created here:
 ./build/qihash
 ```
 
-Install:
+## Build with CMake
+
+```bash
+cmake -S . -B build-cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build build-cmake --config Release
+ctest --test-dir build-cmake --output-on-failure
+```
+
+## Install
 
 ```bash
 make install PREFIX=/usr/local
@@ -154,6 +166,33 @@ Run benchmark:
 ./build/qihash bench --profile light
 ```
 
+Generate benchmark matrix:
+
+```bash
+sh scripts/benchmark_matrix.sh
+```
+
+## Fuzzing and sanitizers
+
+Sanitizer test run:
+
+```bash
+make sanitize CC=clang
+```
+
+Build fuzz harnesses:
+
+```bash
+make fuzz
+```
+
+Run fuzzers:
+
+```bash
+./build/fuzz_parse_encoded fuzz/corpus/parse_encoded -max_total_time=60
+./build/fuzz_codecs fuzz/corpus/codecs -max_total_time=60
+```
+
 ## Password hash format
 
 ```text
@@ -164,7 +203,7 @@ Fields:
 
 | Field | Meaning |
 |---|---|
-| `v` | algorithm version |
+| `v` | algorithm format version |
 | `mode` | `id`, `safe`, or `hard` |
 | `m` | memory cost in KiB |
 | `t` | number of passes |
@@ -208,6 +247,15 @@ qihash_password_hash("secret", pepper, pepper_len, NULL, 0, &params, encoded, si
 int ok = qihash_password_verify("secret", encoded, pepper, pepper_len, NULL, 0);
 ```
 
+## Review and audit preparation
+
+Start here:
+
+- [`docs/REVIEW_PACKET.md`](docs/REVIEW_PACKET.md)
+- [`docs/AUDIT_PLAN.md`](docs/AUDIT_PLAN.md)
+- [`docs/AUDIT_OUTREACH.md`](docs/AUDIT_OUTREACH.md)
+- [`docs/WHITEPAPER_DRAFT.md`](docs/WHITEPAPER_DRAFT.md)
+
 ## Repository layout
 
 ```text
@@ -215,13 +263,14 @@ qihash/
 ├── include/qihash.h
 ├── src/qihash.c
 ├── cli/qihash.c
-├── tests/test_qihash.c
-├── examples/c_example.c
+├── tests/
+├── fuzz/
+├── scripts/
+├── benchmarks/
+├── examples/
 ├── docs/
-│   ├── API.md
-│   ├── CLI.md
-│   ├── DEPLOYMENT.md
-│   └── AUDIT_CHECKLIST.md
+├── .github/
+├── CMakeLists.txt
 ├── SPEC.md
 ├── THREAT_MODEL.md
 ├── COMPETITOR_ANALYSIS.md
