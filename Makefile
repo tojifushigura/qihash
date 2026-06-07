@@ -8,6 +8,7 @@ OBJ := $(BUILD_DIR)/qihash.o
 LIB := $(BUILD_DIR)/libqihash.a
 CLI := $(BUILD_DIR)/qihash
 TEST := $(BUILD_DIR)/test_qihash
+NEG_TEST := $(BUILD_DIR)/test_parser_negative
 EXAMPLE := $(BUILD_DIR)/c_example
 FUZZ_PARSE := $(BUILD_DIR)/fuzz_parse_encoded
 FUZZ_CODEC := $(BUILD_DIR)/fuzz_codecs
@@ -31,11 +32,15 @@ $(CLI): cli/qihash.c $(LIB)
 $(TEST): tests/test_qihash.c $(LIB)
 	$(CC) $(CFLAGS) -Iinclude tests/test_qihash.c $(LIB) -o $(TEST)
 
+$(NEG_TEST): tests/test_parser_negative.c $(LIB)
+	$(CC) $(CFLAGS) -Iinclude tests/test_parser_negative.c $(LIB) -o $(NEG_TEST)
+
 $(EXAMPLE): examples/c_example.c $(LIB)
 	$(CC) $(CFLAGS) -Iinclude examples/c_example.c $(LIB) -o $(EXAMPLE)
 
-test: $(TEST) $(CLI)
+test: $(TEST) $(NEG_TEST) $(CLI)
 	./$(TEST)
+	./$(NEG_TEST)
 	./$(CLI) selftest
 
 example: $(EXAMPLE)
