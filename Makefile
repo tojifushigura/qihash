@@ -9,8 +9,10 @@ LIB := $(BUILD_DIR)/libqihash.a
 CLI := $(BUILD_DIR)/qihash
 TEST := $(BUILD_DIR)/test_qihash
 EXAMPLE := $(BUILD_DIR)/c_example
+FUZZ_PARSE := $(BUILD_DIR)/fuzz_parse_encoded
+FUZZ_CODEC := $(BUILD_DIR)/fuzz_codecs
 
-.PHONY: all clean test install uninstall example dist
+.PHONY: all clean test install uninstall example dist sanitize fuzz
 
 all: $(LIB) $(CLI)
 
@@ -38,6 +40,21 @@ test: $(TEST) $(CLI)
 
 example: $(EXAMPLE)
 	./$(EXAMPLE)
+
+sanitize:
+	$(MAKE) clean
+	$(MAKE) CC=$(CC) CFLAGS="-std=c99 -O1 -g -Wall -Wextra -Wpedantic -D_POSIX_C_SOURCE=200809L -fsanitize=address,undefined -fno-omit-frame-pointer" test
+
+$(FUZZ_PARSE): fuzz/fuzz_parse_encoded.c $(SRC) include/qihash.h | $(BUILD_DIR)
+	clang -std=c99 -O1 -g -Iinclude -fsanitize=fuzzer,address,undefined fuzz/fuzz_parse_encoded.c $(SRC) -o $(FUZZ_PARSE)
+
+$(FUZZ_CODEC): fuzz/fuzz_codecs.c $(SRC) include/qihash.h | $(BUILD_DIR)
+	clang -std=c99 -O1 -g -Iinclude -fsanitize=fuzzer,address,undefined fuzz/fuzz_codecs.c $(SRC) -o $(FUZZ_CODEC)
+
+fuzz: $(FUZZ_PARSE) $(FUZZ_CODEC)
+	@echo "Run examples:"
+	@echo "  ./$(FUZZ_PARSE) -max_total_time=60"
+	@echo "  ./$(FUZZ_CODEC) -max_total_time=60"
 
 install: all
 	install -d $(DESTDIR)$(PREFIX)/bin
