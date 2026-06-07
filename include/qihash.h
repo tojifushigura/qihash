@@ -3,11 +3,10 @@
 
 /*
  * qiHash - Quantum Integrity Hashing Framework
- * Public-domain/MIT-style C99 API for qiHash-v1 and qiKDF-v1.
+ * C99 API for qiHash and qiKDF.
  *
- * This project is an independent open-source implementation. It is engineered
- * as a complete library/CLI, but new cryptographic designs still require
- * public review and professional audit before high-risk deployment.
+ * Project release version: 0.1.0
+ * Encoded format version: v=1
  */
 
 #include <stddef.h>
@@ -17,8 +16,8 @@
 extern "C" {
 #endif
 
-#define QIHASH_VERSION_MAJOR 1
-#define QIHASH_VERSION_MINOR 0
+#define QIHASH_VERSION_MAJOR 0
+#define QIHASH_VERSION_MINOR 1
 #define QIHASH_VERSION_PATCH 0
 
 #define QIHASH_SALT_BYTES_DEFAULT 32
